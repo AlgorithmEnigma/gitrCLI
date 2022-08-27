@@ -1,13 +1,11 @@
 import typer
 import requests
-import os
-import dotenv
 from rich import print  
 from rich.console import Console
 from rich.table import Table
 
 console = Console()
-dotenv.load_dotenv()
+
 
 app = typer.Typer()
 

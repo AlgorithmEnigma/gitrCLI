@@ -1,14 +1,13 @@
 import typer
 import requests
-import os
-import dotenv
 from rich import print  
 from rich.console import Console
 from rich.table import Table
 
-console = Console()
-dotenv.load_dotenv()
+from utils.auth import verifyAuth
 
+
+console = Console()
 app = typer.Typer()
 
 
@@ -16,16 +15,9 @@ app = typer.Typer()
 def list():
     """List signed in users GitHub repositories"""
     
-    if os.getenv("GITHUB_USERNAME") is None or os.getenv("GITHUB_USERNAME") == "":
-        username = typer.prompt("You need to set GITHUB_USERNAME environment variable")
-        dotenv.set_key(".env", "GITHUB_USERNAME", username)
-
-    if os.getenv("GITHUB_TOKEN") is None or os.getenv("GITHUB_TOKEN") == "":
-        token = typer.prompt("You need to provide a GitHub token: ")
-        dotenv.set_key(".env", "GITHUB_TOKEN", token)
 
     
-    basicAuth = (os.getenv("GITHUB_USERNAME"), os.getenv("GITHUB_TOKEN"))
+    basicAuth = verifyAuth()
     res = requests.get("https://api.github.com/user/repos", auth=basicAuth).json()
 
     table = Table("Name", "Visibility", "Stars", "Lang",  "URL")
@@ -45,3 +37,4 @@ def list():
 
 
     console.print(table)
+
