@@ -29,24 +29,30 @@ def list():
     basicAuth = (os.getenv("GITHUB_USERNAME"), os.getenv("GITHUB_TOKEN"))
     res = requests.get("https://api.github.com/user/repos", auth=basicAuth).json()
 
-    table = Table("Name", "Visibility", "Lang",  "URL")
+    table = Table("Name", "Visibility", "Stars", "Lang",  "URL")
     
-            
-    typer.echo(res[0].keys())
     for repo in res:
         name = repo["name"]
         private = repo["private"]
+        stars = repo["stargazers_count"]
         lang = repo["language"]
         link = repo["url"]
 
         if private:
-            table.add_row(name, ":lock: [red]Private[/red]", f"{lang}",   f'[blue]{link}[/blue]')
+            table.add_row(name, ":lock: [red]Private[/red]", f':star: {stars}',  f"{lang}",   f'[blue]{link}[/blue]')
 
         else:
-            table.add_row(name, ":unlock: [green]Public[/green]", f"{lang}", f'[blue]{link}[/blue]')
+            table.add_row(name, ":unlock: [green]Public[/green]", f':star: {stars}', f"{lang}", f'[blue]{link}[/blue]')
 
 
     console.print(table)
+
+
+
+
+@app.command()
+def find(name: str):
+    print(f"Searching for {name}")
 
 
 
