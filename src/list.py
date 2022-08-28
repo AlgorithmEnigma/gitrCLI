@@ -29,7 +29,7 @@ def list(
         visibility = repo["private"]
         stars = repo["stargazers_count"]
         lang = repo["language"]
-        link = repo["url"]
+        link = repo["html_url"]
 
         if private:
             if visibility:
