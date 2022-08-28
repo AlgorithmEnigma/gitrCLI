@@ -47,4 +47,4 @@ def list(
 
 
     console.print(table)
-
+    
