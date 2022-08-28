@@ -1,5 +1,7 @@
 import typer
 import requests
+import os
+
 from rich import print  
 from rich.console import Console
 from rich.table import Table
@@ -11,41 +13,47 @@ app = typer.Typer()
 
 
 @app.command(name="fd", short_help="Find a repository by name")
-def find(reponame: str = typer.Argument(..., help="The name of the repository to find")):
+def find(
+    reponame: str = typer.Argument(..., help="The name of the repository to find"),
+    clone: bool = typer.Option(False, "--clone", "-c", help="Clone the repository")
+):
     '''Find a repository on GitHub by name'''
-    # print(reponame)
+    
+    print(clone)
 
     basicAuth = verifyAuth()
     res = requests.get("https://api.github.com/user/repos", auth=basicAuth).json()
 
-    table = Table("Name", "Visibility", "Stars", "Lang")
-    table.add_column("Git Clone")
-    table.add_column("URL", width=10)
+    table = Table("Name", "Visibility", "Stars", "Lang", "URL")
     
-    # print(f"Searching for {repo}")
+    
     for repo in res:
         if repo["name"] == reponame:
             name = repo["name"]
             visibility = repo["private"]
             stars = repo["stargazers_count"]
             lang = repo["language"]
-            gitLink = repo["git_url"]
-            link = repo["url"]
+            link = repo["html_url"]
+            cloneUrl = repo["clone_url"]
 
             # table.add_row(name, ":lock: [red]Private[/red]", f':star: {stars}',  f"{lang}",   f'[blue]{link}[/blue]')
             
             if visibility:
-                table.add_row(name, ":lock: [red]Private[/red]", f':star: {stars}',  f"{lang}", f'{gitLink}', f'[blue]{link}[/blue]')
+                table.add_row(name, ":lock: [red]Private[/red]", f':star: {stars}',  f"{lang}", f'[blue]{link}[/blue]')
 
             else:
-                table.add_row(name, ":unlock: [green]Public[/green]", f':star: {stars}', f"{lang}", f'{gitLink}', f'[blue]{link}[/blue]')
+                table.add_row(name, ":unlock: [green]Public[/green]", f':star: {stars}', f"{lang}", f'[blue]{link}[/blue]')
             
             console.print(table)
+            if clone:
+                confirm = typer.confirm(f"Clone {name} to {clone}?")
+                if confirm:
+                    print(clone)
+                    os.system(f"git clone {cloneUrl} ./{reponame}")
+                    print(f"Cloned {name}")
             return
         
     
 
-    print(f"Repository {name} not found")
+    print(f"Repository {reponame} not found")
             
-            
-    
