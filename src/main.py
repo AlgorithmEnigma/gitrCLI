@@ -18,8 +18,8 @@ def callback():
     """
     A fancy CLI to manage GitHub repositories.
     """
-    
-    
+
+
 
 
 if __name__ == "__main__":
